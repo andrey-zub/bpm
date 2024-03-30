@@ -9,8 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Component
 @ExternalTaskSubscription("check-show")
@@ -18,14 +16,17 @@ public class CheckShowHandler implements ExternalTaskHandler {
 
     @Override
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        Map<String, Object> vars = new LinkedHashMap<>();
-        vars.put("showAvailable", false);
-
         RestTemplate rt = new RestTemplate();
-        Object response = rt.getForObject("http://localhost:8082/JavaRest/rest/show/list", Object.class);
-        System.out.println(response);
+        Object[] response = rt.getForObject("http://localhost:8091/show/list", Object[].class);
+        Map<String, Object> vars = new LinkedHashMap<>();
 
-        Logger.getLogger("check-show").log(Level.INFO, "Checked show availability");
-        externalTaskService.complete(externalTask, vars);
+        if (response != null && response.length > 0) {
+            vars.put("showAvailable", true);
+            vars.put("showList", response);
+            externalTaskService.complete(externalTask, vars);
+        } else {
+            vars.put("showAvailable", false);
+            externalTaskService.complete(externalTask);
+        }
     }
 }

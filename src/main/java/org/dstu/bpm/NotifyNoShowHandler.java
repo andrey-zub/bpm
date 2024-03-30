@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class NotifyNoShowHandler implements ExternalTaskHandler {
     @Override
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        Logger.getLogger("notify-no-show").log(Level.WARNING, "No show available for booking!");
+        System.out.println("No shows are available at the moment.");
         externalTaskService.complete(externalTask);
     }
 }
